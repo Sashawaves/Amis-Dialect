@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>O Pinokayan A Lalan│回家之路  方言別查詢工具</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f4f0;
+    --ink: #1a110a;
+    --cream: #fffdf9;
+    --border: #ddd5c8;
+
+    --南勢: #c87a88;
+    --南勢-text: #7a3a45;
+    --南勢-light: #f5d8dc;
+
+    --秀姑巒: #b09848;
+    --秀姑巒-text: #6a5a20;
+    --秀姑巒-light: #ede8c0;
+
+    --海岸: #6a9ec0;
+    --海岸-text: #3a5f7a;
+    --海岸-light: #c8dff0;
+
+    --馬蘭: #c07888;
+    --馬蘭-text: #7a3a50;
+    --馬蘭-light: #f5d5dc;
+
+    --恆春: #5a9a80;
+    --恆春-text: #2a5a45;
+    --恆春-light: #c8e0d8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Noto Sans TC', sans-serif;
+    min-height: 100vh;
+  }
+
+  header {
+    background: #1a110a;
+    padding: 32px 20px 26px;
+    text-align: center;
+  }
+  header .sub {
+    font-size: 13px; letter-spacing: 2px;
+    color: rgba(255,255,255,0.55);
+    margin-bottom: 10px;
+  }
+  header h1 {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(22px, 5vw, 34px);
+    font-weight: 900; color: #fff; line-height: 1.3;
+  }
+  header p { font-size: 13px; color: rgba(255,255,255,0.45); margin-top: 8px; }
+
+  .legend-bar {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    justify-content: center;
+    padding: 16px 20px;
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+  }
+  .legend-pill {
+    display: flex; align-items: center; gap: 6px;
+    padding: 5px 14px; border-radius: 999px;
+    font-size: 13px; font-weight: 700; color: #fff;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.15s;
+    user-select: none;
+  }
+  .legend-pill:hover { opacity: 0.82; transform: scale(1.04); }
+  .legend-pill.南勢  { background: var(--南勢-light); color: var(--南勢-text); }
+  .legend-pill.秀姑巒 { background: var(--秀姑巒-light); color: var(--秀姑巒-text); }
+  .legend-pill.海岸  { background: var(--海岸-light); color: var(--海岸-text); }
+  .legend-pill.馬蘭  { background: var(--馬蘭-light); color: var(--馬蘭-text); }
+  .legend-pill.恆春  { background: var(--恆春-light); color: var(--恆春-text); }
+
+  .container { max-width: 900px; margin: 0 auto; padding: 0 16px 70px; }
+
+  .step-block { padding-top: 28px; }
+  .step-label {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: #999; margin-bottom: 14px;
+  }
+  .step-label .num {
+    width: 26px; height: 26px;
+    background: #1a110a; color: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; flex-shrink: 0;
+  }
+
+  .county-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .county-btn {
+    padding: 9px 22px;
+    border: 1.5px solid var(--border);
+    border-radius: 999px;
+    background: var(--cream); color: var(--ink);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 15px; font-weight: 500;
+    cursor: pointer; transition: all 0.16s;
+  }
+  .county-btn:hover { border-color: #999; }
+  .county-btn.active { background: #1a110a; border-color: #1a110a; color: #fff; }
+
+  .town-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+  .town-btn {
+    padding: 8px 18px;
+    border: 1.5px solid var(--border); border-radius: 8px;
+    background: var(--cream); color: var(--ink);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 14px; cursor: pointer; transition: all 0.16s;
+  }
+  .town-btn:hover { border-color: #999; }
+  .town-btn.active { background: #1a110a; border-color: #1a110a; color: #fff; }
+
+  .search-wrap { position: relative; }
+  .search-wrap input {
+    width: 100%;
+    padding: 11px 16px 11px 42px;
+    border: 1.5px solid var(--border); border-radius: 10px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 15px; background: var(--cream);
+    outline: none; transition: border-color 0.16s;
+  }
+  .search-wrap input:focus { border-color: #888; }
+  .search-wrap .ico {
+    position: absolute; left: 14px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px; pointer-events: none; color: #999;
+  }
+
+  .tribe-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+    gap: 10px; margin-top: 14px;
+    max-height: 360px; overflow-y: auto; padding: 2px;
+  }
+  .tribe-card {
+    border: 1.5px solid var(--border); border-radius: 10px;
+    background: var(--cream); padding: 11px 14px 10px;
+    cursor: pointer; transition: all 0.15s; text-align: left;
+  }
+  .tribe-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.09); }
+  .tribe-card .tribe-name { font-size: 15px; font-weight: 700; line-height: 1.3; margin-bottom: 2px; }
+  .tribe-card .tribe-roman { font-size: 11px; color: #999; margin-bottom: 6px; font-style: italic; }
+  .tribe-card .tribe-village { font-size: 11px; color: #bbb; }
+  .tribe-card .dialect-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    display: inline-block; margin-right: 5px; vertical-align: middle;
+  }
+
+  .tribe-card.active { border-width: 2.5px; }
+  .tribe-card.active-南勢  { border-color: var(--南勢);  background: var(--南勢-light); }
+  .tribe-card.active-秀姑巒 { border-color: var(--秀姑巒); background: var(--秀姑巒-light); }
+  .tribe-card.active-海岸  { border-color: var(--海岸);  background: var(--海岸-light); }
+  .tribe-card.active-馬蘭  { border-color: var(--馬蘭);  background: var(--馬蘭-light); }
+  .tribe-card.active-恆春  { border-color: var(--恆春);  background: var(--恆春-light); }
+
+  .dot-南勢  { background: var(--南勢); }
+  .dot-秀姑巒 { background: var(--秀姑巒); }
+  .dot-海岸  { background: var(--海岸); }
+  .dot-馬蘭  { background: var(--馬蘭); }
+  .dot-恆春  { background: var(--恆春); }
+
+  .hint { font-size: 12px; color: #bbb; margin-top: 8px; }
+  .div-line { height: 1px; background: var(--border); margin-top: 28px; }
+  .hidden { display: none; }
+
+  #result-area {
+    opacity: 0; transform: translateY(20px);
+    transition: all 0.35s ease; pointer-events: none;
+  }
+  #result-area.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+  .result-card {
+    border-radius: 18px; padding: 30px 26px 26px;
+    color: #fff; position: relative; overflow: hidden;
+  }
+  .result-card::after {
+    content: ''; position: absolute;
+    bottom: -50px; right: -50px;
+    width: 180px; height: 180px; border-radius: 50%;
+    background: rgba(255,255,255,0.08); pointer-events: none;
+  }
+  .r-eyebrow { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; opacity: 0.6; margin-bottom: 6px; }
+  .r-tribe {
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(26px, 6vw, 42px);
+    font-weight: 900; line-height: 1.2;
+  }
+  .r-roman { font-size: 15px; opacity: 0.65; margin-top: 3px; font-style: italic; }
+  .r-dialect {
+    display: inline-block; margin-top: 14px;
+    padding: 5px 16px; border-radius: 999px;
+    background: rgba(255,255,255,0.2);
+    font-size: 15px; font-weight: 700;
+  }
+  .r-divider { border: none; border-top: 1px solid rgba(255,255,255,0.2); margin: 18px 0; }
+  .r-meta { display: flex; flex-wrap: wrap; gap: 22px; }
+  .r-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.5; margin-bottom: 3px; }
+  .r-val { font-size: 15px; font-weight: 500; }
+
+  .bg-南勢  { background: var(--南勢-light); color: var(--南勢-text) !important; }
+  .bg-秀姑巒 { background: var(--秀姑巒-light); color: var(--秀姑巒-text) !important; }
+  .bg-海岸  { background: var(--海岸-light); color: var(--海岸-text) !important; }
+  .bg-馬蘭  { background: var(--馬蘭-light); color: var(--馬蘭-text) !important; }
+  .bg-恆春  { background: var(--恆春-light); color: var(--恆春-text) !important; }
+  .result-card .r-dialect { background: rgba(0,0,0,0.1); }
+  .result-card .r-divider { border-top-color: rgba(0,0,0,0.15); }
+  .result-card .r-eyebrow { opacity: 0.6; }
+  .result-card .r-roman { opacity: 0.65; }
+  .result-card .r-label { opacity: 0.5; }
+
+  .reset-btn {
+    margin-top: 18px; padding: 9px 22px;
+    border: 1.5px solid var(--border); border-radius: 999px;
+    background: transparent;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 13px; cursor: pointer; color: #555;
+    transition: all 0.16s;
+  }
+  .reset-btn:hover { border-color: #888; color: #1a110a; background: #fff; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="sub">O Pinokayan A Lalan│回家之路</div>
+  <h1>方言別查詢工具</h1>
+  <p>選擇您的縣市 → 鄉鎮 → 部落，立即顯示方言別</p>
+</header>
+
+<div class="legend-bar">
+  <span class="legend-pill 南勢"  onclick="filterByDialect('南勢阿美語')">● 南勢阿美語</span>
+  <span class="legend-pill 秀姑巒" onclick="filterByDialect('秀姑巒阿美語')">● 秀姑巒阿美語</span>
+  <span class="legend-pill 海岸"  onclick="filterByDialect('海岸阿美語')">● 海岸阿美語</span>
+  <span class="legend-pill 馬蘭"  onclick="filterByDialect('馬蘭阿美語')">● 馬蘭阿美語</span>
+  <span class="legend-pill 恆春"  onclick="filterByDialect('恆春阿美語')">● 恆春阿美語</span>
+</div>
+
+<div class="container">
+
+  <div class="step-block">
+    <div class="step-label"><span class="num">1</span> 選擇縣市</div>
+    <div class="county-grid" id="county-grid"></div>
+  </div>
+
+  <div class="step-block hidden" id="step2">
+    <div class="div-line"></div>
+    <div style="margin-top:28px">
+      <div class="step-label"><span class="num">2</span> 選擇鄉鎮市</div>
+      <div class="town-grid" id="town-grid"></div>
+    </div>
+  </div>
+
+  <div class="step-block hidden" id="step3">
+    <div class="div-line"></div>
+    <div style="margin-top:28px">
+      <div class="step-label"><span class="num">3</span> 選擇部落</div>
+      <div class="search-wrap">
+        <span class="ico">🔍</span>
+        <input type="text" id="tribe-search" placeholder="輸入部落名稱搜尋…" oninput="filterTribes()">
+      </div>
+      <div class="tribe-grid" id="tribe-grid"></div>
+      <p class="hint" id="tribe-hint"></p>
+    </div>
+  </div>
+
+  <div id="result-area">
+    <div class="div-line"></div>
+    <div style="margin-top:28px">
+      <div class="step-label"><span class="num">✓</span> 您的方言別</div>
+      <div class="result-card" id="result-card">
+        <div class="r-eyebrow">部落 · Tribe</div>
+        <div class="r-tribe" id="r-tribe"></div>
+        <div class="r-roman" id="r-roman"></div>
+        <div class="r-dialect" id="r-dialect-badge"></div>
+        <hr class="r-divider">
+        <div class="r-meta">
+          <div>
+            <div class="r-label">縣市</div>
+            <div class="r-val" id="r-county"></div>
+          </div>
+          <div>
+            <div class="r-label">鄉鎮市</div>
+            <div class="r-val" id="r-town"></div>
+          </div>
+          <div>
+            <div class="r-label">村里</div>
+            <div class="r-val" id="r-village"></div>
+          </div>
+        </div>
+      </div>
+      <button class="reset-btn" onclick="reset()">↺ 重新查詢</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const TRIBES = [
+  // ══ 南勢阿美語 ══
+  {d:'南勢阿美語',c:'花蓮縣',t:'新城鄉',v:'大漢村',z:'華陽部落',r:'Pacidal'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'新城鄉',v:'大漢村',z:'大德（巴烏拉藍）部落',r:'Paudadan'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'新城鄉',v:'北埔村',z:'東方羅馬部落',r:'Lalumaang'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'新城鄉',v:'康樂村',z:'康樂部落',r:'Palamitan'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'新城鄉',v:'嘉里村',z:'嘉里部落',r:'Kaliyawan'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'新城鄉',v:'嘉新村',z:'嘉新部落',r:'Cilapuk'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'新城鄉',v:'新城村',z:'新城部落',r:'Sudadatan'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'新城鄉',v:'順安村',z:'順安部落',r:'Pibutingan'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'新城鄉',v:'北埔村',z:'北埔部落',r:'Hupu'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'新城鄉',v:'佳林村',z:'佳林部落',r:'Katanka'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'新城鄉',v:'大漢村',z:'北星部落',r:'Pabuisan'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'新城鄉',v:'北埔村',z:'復興部落',r:'Palinkaan'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'花蓮市',v:'主農里',z:'主農部落',r:'Cibarbaran'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'花蓮市',v:'主農里',z:'德安部落',r:'Cipawkan'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'花蓮市',v:'民享里',z:'幾可普部落',r:'Cikep'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'花蓮市',v:'民孝里',z:'華東部落',r:'Tuwapun'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'花蓮市',v:'國強里',z:'新夏部落',r:'Singsiya'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'花蓮市',v:'國富里',z:'根努夷部落',r:'Kenuy'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'花蓮市',v:'民樂里',z:'磯固部落',r:'Ciku'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'花蓮市',v:'國裕里',z:'拉署旦部落',r:'Lasutan'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'花蓮市',v:'國興里',z:'嘎尼按部落',r:'Kanian'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'花蓮市',v:'國盛里',z:'達蘇達蘇湳部落',r:'Tasutasunan'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'南昌村',z:'那荳蘭部落',r:'Natawran'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'仁里村',z:'簿簿部落',r:'Pukpuk'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'東昌村',z:'里漏部落',r:'Lidaw'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'南華村',z:'南華部落',r:'Mabuwakay'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'太昌村',z:'七腳川部落',r:'Cikasuwan'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'仁和村',z:'仁和部落',r:'Isaetipan pahikukian'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'仁安村',z:'巴沙哇力岸部落',r:'Pasawalian'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'東昌村',z:'達拉贊部落',r:'Taracan'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'永興村',z:'小台東部落',r:'Citekudan'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'永興村',z:'歌柳灣部落',r:'Cikeliwan'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'光華村',z:'阿都南部落',r:'Atonan'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'慶豐村',z:'慶豐部落',r:'Ciripunan'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'北昌村',z:'撒樂部落',r:'Sarad'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'福興村',z:'大鼓部落',r:'Kungkung'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'干城村',z:'干城部落',r:'Hacining'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'勝安村',z:'勝安部落',r:'Fulufuluan'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'宜昌村',z:'宜昌部落',r:'Buner'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'永安村',z:'永安部落',r:'Sirakesay'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'吉安村',z:'吉野汎扎萊部落',r:'Ciyibangcalay'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'壽豐鄉',v:'壽豐村',z:'壽豐部落',r:'Ciamengan'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'壽豐鄉',v:'溪口村',z:'溪口部落',r:'Kiku'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'壽豐鄉',v:'池南村',z:'池南部落',r:'Fanaw'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'壽豐鄉',v:'光榮村',z:'光榮部落',r:'Rinahem'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'壽豐鄉',v:'水璉村',z:'水璉部落',r:'Ciwidiyan'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'壽豐鄉',v:'豐坪村',z:'豐坪部落',r:"Telu'"},
+  {d:'南勢阿美語',c:'花蓮縣',t:'壽豐鄉',v:'豐山村',z:'豐山部落',r:'Cealalupalantdlu'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'壽豐鄉',v:'平和村',z:'平和部落',r:'Adetuman'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'壽豐鄉',v:'豐裡村',z:'豐裡部落',r:'Tdlu'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'壽豐鄉',v:'共和村',z:'共和部落',r:'Sawanengan'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'壽豐鄉',v:'樹湖村',z:'樹湖部落',r:'Taukak'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'壽豐鄉',v:'志學村',z:'志學部落',r:'Cihak'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'壽豐鄉',v:'米棧村',z:'米棧部落',r:'Cipuypuyan'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'壽豐鄉',v:'鹽寮村',z:'鹽寮部落',r:'Tumay'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'壽豐鄉',v:'月眉村',z:'月眉（上部落）',r:'Sililasay'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'壽豐鄉',v:'月眉村',z:'月眉（中部落）',r:'Siapaluway'},
+
+  // ══ 秀姑巒阿美語 ══
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'鳳林鎮',v:'鳳信里',z:'鳳信部落',r:'Cingaroan'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'鳳林鎮',v:'山興里',z:'山興部落',r:'Cirakayan'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'鳳林鎮',v:'山興里',z:'中興部落',r:'Cihafayan'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'鳳林鎮',v:'大榮里',z:'大榮部落',r:'Sariwsiw'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'鳳林鎮',v:'長橋里',z:'長橋部落',r:'Tangahang'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'鳳林鎮',v:'森榮里',z:'森榮部落',r:"Cilo'ohay"},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'光復鄉',v:'東富村、西富村、南富村、北富村',z:'太巴塱部落',r:'Tafalong'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'光復鄉',v:'大平村、大馬村、大華村、大同村',z:'馬太鞍部落',r:"Fata'an"},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'光復鄉',v:'大全村',z:'拉索艾部落',r:"Laso'ay"},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'光復鄉',v:'西富村',z:'阿囉隆部落',r:'Alolong'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'光復鄉',v:'南富村',z:'砂荖部落',r:'Sado'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'光復鄉',v:'東富村',z:'加里洞部落',r:'Kalotong'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'光復鄉',v:'大興村',z:'烏卡蓋部落',r:'O kakay'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'光復鄉',v:'東富村',z:'阿陶模部落',r:'Atomo'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'光復鄉',v:'西富村',z:'馬佛部落',r:'Fahol'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'瑞穗鄉',v:'富民村',z:'拉加善部落',r:'Langas'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'瑞穗鄉',v:'富興村',z:'拉基禾幹部落',r:'Lacihakan'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'瑞穗鄉',v:'富民村',z:'牧魯棧部落',r:'Morocan'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'瑞穗鄉',v:'富民村',z:'阿多瀾部落',r:'Atolan'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'瑞穗鄉',v:'瑞祥村',z:'溫泉部落',r:'Koyo'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'瑞穗鄉',v:'瑞穗村',z:'烏槓部落',r:'Ukang'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'瑞穗鄉',v:'瑞美村',z:'娜魯灣部落',r:'Narowan'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'瑞穗鄉',v:'舞鶴村',z:'迦納納部落',r:'Kalala'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'瑞穗鄉',v:'舞鶴村',z:'掃叭頂部落',r:'Sapat'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'瑞穗鄉',v:'鶴岡村',z:'屋拉力部落',r:'Olalip'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'瑞穗鄉',v:'瑞良村',z:'法淖部落',r:'Fanaw'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'瑞穗鄉',v:'鶴岡村',z:'梧繞部落',r:'Olaw'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'瑞穗鄉',v:'瑞北村',z:'馬聚集部落',r:'Marorok'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'瑞穗鄉',v:'富源村',z:'鶺櫓棧部落',r:'Cirocan'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'瑞穗鄉',v:'奇美村',z:'奇美部落',r:'Kiwit'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'玉里鎮',v:'樂合里',z:'安通部落',r:'Angcoh'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'玉里鎮',v:'東豐里',z:'阿飛赫部落',r:'Afih'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'玉里鎮',v:'樂合里',z:'哈拉灣部落',r:'Harawan'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'玉里鎮',v:'德武里',z:'苓雅仔部落',r:'Lingacay'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'玉里鎮',v:'春日里',z:'春日部落',r:'Ceroh'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'玉里鎮',v:'觀音里',z:'巴島力安部落',r:'Patawlinan'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'玉里鎮',v:'松浦里',z:'瑪谷達璦部落',r:'Makotaay'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'玉里鎮',v:'大禹里',z:'瑟冷部落',r:'Sedeng'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'玉里鎮',v:'觀音里',z:'都旮薾部落',r:'Tokar'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'玉里鎮',v:'松浦里',z:'洛合谷部落',r:'Lohok'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'玉里鎮',v:'永昌里',z:'璞石閣部落',r:'Posko'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'玉里鎮',v:'源城里',z:'喜瑯宮部落',r:'Silangkong'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'玉里鎮',v:'長良里',z:'吉哈蓋部落',r:'Cihakay'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'玉里鎮',v:'泰昌里',z:'吉拉格賽部落',r:'Cilakesay'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'玉里鎮',v:'中城里',z:'吉能能麥部落',r:'Cinemnemay'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'玉里鎮',v:'三民里',z:'達蓋部落',r:'Takay'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'玉里鎮',v:'德武里',z:'下德武部落',r:'Satefo'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'玉里鎮',v:'樂合里',z:'拿彌散部落',r:'Namisan'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'玉里鎮',v:'春日里',z:'馬太林部落',r:'Matadim'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'玉里鎮',v:'松浦里',z:'滿自然部落',r:'Mangcelan'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'富里鄉',v:'豐南村',z:'吉拉米代部落',r:'Cilamitay'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'富里鄉',v:'新興村',z:'達蘭埠部落',r:'Talampo'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'富里鄉',v:'萬寧村',z:'姆拉丁部落',r:'Monating'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'富里鄉',v:'東里村',z:'基拉歌賽',r:'Cirakesay'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'富里鄉',v:'吳江村',z:'巴族耶部落',r:'Pacuya'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'富里鄉',v:'吳江村',z:'安住部落',r:'Ancoh'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'富里鄉',v:'學田村',z:'馬里旺部落',r:'Maliwang'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'富里鄉',v:'富南村',z:'露埔部落',r:'Lupo'},
+  {d:'秀姑巒阿美語',c:'花蓮縣',t:'富里鄉',v:'竹田村',z:'黑暗部落',r:'Cihalaay'},
+  {d:'秀姑巒阿美語',c:'臺東縣',t:'東河鄉',v:'北源村',z:'順那部落',r:"Sena'"},
+  {d:'秀姑巒阿美語',c:'臺東縣',t:'東河鄉',v:'北源村',z:'阿奚露艾部落',r:'Asiroay'},
+
+  // ══ 海岸阿美語 ══
+  {d:'海岸阿美語',c:'花蓮縣',t:'豐濱鄉',v:'港口村',z:'大港口部落',r:'Laeno'},
+  {d:'海岸阿美語',c:'花蓮縣',t:'豐濱鄉',v:'港口村',z:'港口部落',r:'Makotaay'},
+  {d:'海岸阿美語',c:'花蓮縣',t:'豐濱鄉',v:'港口村',z:'石梯坪部落',r:"Tida'an"},
+  {d:'海岸阿美語',c:'花蓮縣',t:'豐濱鄉',v:'豐濱村',z:'豐濱部落',r:'Fakong'},
+  {d:'海岸阿美語',c:'花蓮縣',t:'豐濱鄉',v:'豐濱村',z:'八里灣部落',r:'Haciliwan'},
+  {d:'海岸阿美語',c:'花蓮縣',t:'豐濱鄉',v:'豐濱村',z:'豐富部落',r:'Tingalaw'},
+  {d:'海岸阿美語',c:'花蓮縣',t:'豐濱鄉',v:'靜浦村',z:'靜安部落',r:'Tisilan'},
+  {d:'海岸阿美語',c:'花蓮縣',t:'豐濱鄉',v:'靜浦村',z:'三富橋部落',r:'Tafugan'},
+  {d:'海岸阿美語',c:'花蓮縣',t:'豐濱鄉',v:'靜浦村',z:'靜浦部落',r:'Cawi'},
+  {d:'海岸阿美語',c:'花蓮縣',t:'豐濱鄉',v:'新社村',z:'東興部落',r:'Malaloong'},
+  {d:'海岸阿美語',c:'花蓮縣',t:'豐濱鄉',v:'新社村',z:'復興部落',r:'Dipit'},
+  {d:'海岸阿美語',c:'臺東縣',t:'長濱鄉',v:'竹湖村',z:'永福部落',r:'Mornos'},
+  {d:'海岸阿美語',c:'臺東縣',t:'長濱鄉',v:'三間村',z:'大俱來部落',r:'Tapowaray'},
+  {d:'海岸阿美語',c:'臺東縣',t:'長濱鄉',v:'長濱村',z:'長光（石坑）部落',r:'Ciwkangan'},
+  {d:'海岸阿美語',c:'臺東縣',t:'長濱鄉',v:'三間村',z:'真柄部落',r:'Makrahay'},
+  {d:'海岸阿美語',c:'臺東縣',t:'長濱鄉',v:'寧埔村',z:'烏石鼻部落',r:'Cidatayay'},
+  {d:'海岸阿美語',c:'臺東縣',t:'長濱鄉',v:'寧埔村',z:'膽曼部落',r:"Ta'man"},
+  {d:'海岸阿美語',c:'臺東縣',t:'長濱鄉',v:'樟原村',z:'大峰峰部落',r:"Polo't"},
+  {d:'海岸阿美語',c:'臺東縣',t:'長濱鄉',v:'竹湖村',z:'巴卡拉阿茲部落',r:"Pakara'ac"},
+  {d:'海岸阿美語',c:'臺東縣',t:'長濱鄉',v:'寧埔村',z:'八桑安部落',r:'Pasongan'},
+  {d:'海岸阿美語',c:'臺東縣',t:'長濱鄉',v:'樟原村',z:'樟原部落',r:"Kolado't"},
+  {d:'海岸阿美語',c:'臺東縣',t:'長濱鄉',v:'寧埔村',z:'堺橋部落',r:'Carapongay'},
+  {d:'海岸阿美語',c:'臺東縣',t:'長濱鄉',v:'三間村',z:'三間屋部落',r:'Sadipongan'},
+  {d:'海岸阿美語',c:'臺東縣',t:'長濱鄉',v:'三間村',z:'南溪阿美部落',r:'Cikadaan'},
+  {d:'海岸阿美語',c:'臺東縣',t:'長濱鄉',v:'寧埔村',z:'僅那鹿角部落',r:'Kinanoka'},
+  {d:'海岸阿美語',c:'臺東縣',t:'成功鎮',v:'忠仁里',z:'麒麟部落',r:'Ciliksay'},
+  {d:'海岸阿美語',c:'臺東縣',t:'成功鎮',v:'信義里',z:'都歷部落',r:'Torik'},
+  {d:'海岸阿美語',c:'臺東縣',t:'成功鎮',v:'博愛里',z:'宜灣部落',r:"Sa'aniwan"},
+  {d:'海岸阿美語',c:'臺東縣',t:'成功鎮',v:'忠智里',z:'民豐部落',r:'Kalahaay'},
+  {d:'海岸阿美語',c:'臺東縣',t:'成功鎮',v:'和平里',z:'和平部落',r:'Kahciday'},
+  {d:'海岸阿美語',c:'臺東縣',t:'成功鎮',v:'三民里',z:'麻荖漏部落',r:'Madawdaw'},
+  {d:'海岸阿美語',c:'臺東縣',t:'成功鎮',v:'忠孝里',z:'玉水橋部落',r:'Dadowacen'},
+  {d:'海岸阿美語',c:'臺東縣',t:'成功鎮',v:'忠孝里',z:'小港部落',r:'Folalacay'},
+  {d:'海岸阿美語',c:'臺東縣',t:'成功鎮',v:'三仙里',z:'芝田部落',r:'Cirarokohay'},
+  {d:'海岸阿美語',c:'臺東縣',t:'成功鎮',v:'博愛里',z:'重安部落',r:'Tomiyac'},
+  {d:'海岸阿美語',c:'臺東縣',t:'成功鎮',v:'信義里',z:'小馬部落',r:'Piyoxo'},
+  {d:'海岸阿美語',c:'臺東縣',t:'成功鎮',v:'忠孝里',z:'美山部落',r:"Mararo'ong"},
+  {d:'海岸阿美語',c:'臺東縣',t:'成功鎮',v:'三仙里',z:'比西里岸部落',r:'Pisirian'},
+  {d:'海岸阿美語',c:'臺東縣',t:'成功鎮',v:'信義里',z:'八嗡嗡部落',r:'Paongaongan'},
+  {d:'海岸阿美語',c:'臺東縣',t:'東河鄉',v:'北源村',z:'乎哇固部落',r:'Howak'},
+  {d:'海岸阿美語',c:'臺東縣',t:'東河鄉',v:'興昌村',z:'巴阿尼豐部落',r:"Pa'anifong"},
+  {d:'海岸阿美語',c:'臺東縣',t:'東河鄉',v:'隆昌村',z:'佳尼發納部落',r:'Kalifangar'},
+  {d:'海岸阿美語',c:'臺東縣',t:'東河鄉',v:'都蘭村',z:'阿度蘭部落',r:"'Etolan"},
+  {d:'海岸阿美語',c:'臺東縣',t:'東河鄉',v:'泰源村',z:'阿拉巴灣部落',r:'Alapawan'},
+  {d:'海岸阿美語',c:'臺東縣',t:'東河鄉',v:'北源村',z:'基拉菲婻部落',r:'Cilafinan'},
+  {d:'海岸阿美語',c:'臺東縣',t:'東河鄉',v:'東河村',z:'發富谷部落',r:'Fafokod'},
+  {d:'海岸阿美語',c:'臺東縣',t:'東河鄉',v:'尚德村',z:'瑪屋撈外部落',r:"Ma'olaway"},
+  {d:'海岸阿美語',c:'臺東縣',t:'太麻里鄉',v:'美和村',z:'荒野部落',r:'Anasolay'},
+  {d:'海岸阿美語',c:'臺東縣',t:'太麻里鄉',v:'泰和村',z:'德其里部落',r:'Takidis'},
+
+  // ══ 馬蘭阿美語 ══
+  {d:'馬蘭阿美語',c:'臺東縣',t:'臺東市',v:'豐谷里',z:'高坡部落',r:'Apapuro'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'臺東市',v:'富岡里',z:'巴沙哇力部落',r:'Pasawali'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'臺東市',v:'永樂里、豐樂里',z:'伊濘部落',r:'Ining'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'臺東市',v:'中心里',z:'馬蘭部落',r:'Falangaw'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'臺東市',v:'豐年里',z:'阿西路愛部落',r:'Asiroay'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'臺東市',v:'四維里',z:'布頌部落',r:'Pusong'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'臺東市',v:'豐里里',z:'阿拉巴奈部落',r:'Alapanay'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'臺東市',v:'富岡里',z:'加路蘭部落',r:'Karoroan'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'臺東市',v:'豐谷里',z:'馬當部落',r:'Matang'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'臺東市',v:'南榮里',z:'新馬蘭部落',r:'Fukid'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'臺東市',v:'南榮里',z:'大橋部落',r:'Pongodan'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'臺東市',v:'豐榮里',z:'常德部落',r:'Sihodingan'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'臺東市',v:'富豐里',z:'石山部落',r:'Kakawasan'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'臺東市',v:'建農里',z:'建農部落',r:'Siafulungay'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'臺東市',v:'新園里',z:'巴古崙岸部落',r:'Pakulungan'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'卑南鄉',v:'嘉豐村',z:'山里部落',r:"Kalito'od"},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'卑南鄉',v:'富山村',z:'莿桐部落',r:'Fudafudak'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'卑南鄉',v:'利吉村',z:'利吉部落',r:'Dikidiki'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'關山鎮',v:'新福里',z:'新福部落',r:'Parupu'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'關山鎮',v:'德高里',z:'德高部落',r:'Takofan'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'關山鎮',v:'電光里',z:'電光部落',r:'Himoti'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'關山鎮',v:'豐泉里',z:'豐泉部落',r:'Ciwcia'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'關山鎮',v:'月眉里',z:'月眉部落',r:'Cu ki ngo'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'關山鎮',v:'里壠里',z:'隆興部落',r:'Cipurungan'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'鹿野鄉',v:'鹿野村',z:'和平部落',r:'Parayapay'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'鹿野鄉',v:'永安村',z:'永昌部落',r:'Rekat'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'鹿野鄉',v:'瑞源村',z:'瑞源部落',r:'Efong'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'鹿野鄉',v:'瑞和村',z:'瑞興部落',r:"Pakala'ac"},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'鹿野鄉',v:'瑞和村',z:'八伊拉善部落',r:'Pailasan'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'鹿野鄉',v:'永安村',z:'山領榴部落',r:'Salinliw'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'鹿野鄉',v:'瑞隆村',z:'卡拿吾部部落',r:"Kanao'pu"},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'池上鄉',v:'大埔村',z:'大埔部落',r:'Kalokapuk'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'池上鄉',v:'振興村',z:'振興部落',r:'Muliyaw'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'池上鄉',v:'富興村',z:'富興部落',r:"Cikowa'ay"},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'池上鄉',v:'大埔村',z:'陸安部落',r:'Dihekoay'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'池上鄉',v:'福原村',z:'福原部落',r:'Ciataw'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'池上鄉',v:'慶豐村',z:'慶豐部落',r:'Cipuwa'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'池上鄉',v:'新興村',z:'新興部落',r:'Fangafangasan'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'池上鄉',v:'大坡村',z:'大坡部落',r:'Kawaliwali'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'池上鄉',v:'福文村',z:'福文部落',r:"Cicala'ay"},
+
+  // ══ 恆春阿美語 ══
+  {d:'恆春阿美語',c:'屏東縣',t:'牡丹鄉',v:'旭海村',z:'旭海（馬查蘭）部落',r:'Macaran'},
+  {d:'恆春阿美語',c:'臺東縣',t:'太麻里鄉',v:'香蘭村',z:'沙薩拉克部落',r:'Sasaljak'},
+  {d:'恆春阿美語',c:'臺東縣',t:'太麻里鄉',v:'金崙村',z:'吉拉龍噯部落',r:'Cilalongay'},
+];
+
+const counties = [...new Set(TRIBES.map(t=>t.c))].sort();
+let selCounty=null, selTown=null, selTribe=null, currentTribes=[];
+
+function townsFor(c){ return [...new Set(TRIBES.filter(t=>t.c===c).map(t=>t.t))].sort(); }
+function tribesFor(c,t){ return TRIBES.filter(x=>x.c===c&&x.t===t); }
+function dKey(d){ return d.replace('阿美語',''); }
+
+function renderCounties(){
+  const g=document.getElementById('county-grid');
+  g.innerHTML='';
+  counties.forEach(c=>{
+    const b=document.createElement('button');
+    b.className='county-btn'+(c===selCounty?' active':'');
+    b.textContent=c;
+    b.onclick=()=>selectCounty(c);
+    g.appendChild(b);
+  });
+}
+
+function selectCounty(c){
+  selCounty=c; selTown=null; selTribe=null;
+  renderCounties(); renderTowns();
+  document.getElementById('step2').classList.remove('hidden');
+  document.getElementById('step3').classList.add('hidden');
+  hideResult();
+  document.getElementById('step2').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function renderTowns(){
+  const g=document.getElementById('town-grid');
+  g.innerHTML='';
+  townsFor(selCounty).forEach(t=>{
+    const b=document.createElement('button');
+    b.className='town-btn'+(t===selTown?' active':'');
+    b.textContent=t;
+    b.onclick=()=>selectTown(t);
+    g.appendChild(b);
+  });
+}
+
+function selectTown(t){
+  selTown=t; selTribe=null;
+  renderTowns();
+  currentTribes=tribesFor(selCounty,selTown);
+  document.getElementById('tribe-search').value='';
+  renderTribes(currentTribes);
+  document.getElementById('step3').classList.remove('hidden');
+  hideResult();
+  document.getElementById('step3').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function renderTribes(list){
+  const g=document.getElementById('tribe-grid');
+  g.innerHTML='';
+  list.forEach(tr=>{
+    const dk=dKey(tr.d);
+    const isActive=selTribe&&selTribe.z===tr.z&&selTribe.r===tr.r;
+    const card=document.createElement('button');
+    card.className='tribe-card'+(isActive?` active active-${dk}`:'');
+    card.innerHTML=`
+      <div class="tribe-name"><span class="dialect-dot dot-${dk}"></span>${tr.z}</div>
+      <div class="tribe-roman">${tr.r}</div>
+      <div class="tribe-village">${tr.v}</div>
+    `;
+    card.onclick=()=>{ selTribe=tr; renderTribes(list); showResult(tr); };
+    g.appendChild(card);
+  });
+  document.getElementById('tribe-hint').textContent=
+    list.length>0?`共 ${list.length} 個部落`:'找不到符合的部落';
+}
+
+function filterTribes(){
+  const q=document.getElementById('tribe-search').value.trim();
+  const filtered=q
+    ?currentTribes.filter(tr=>tr.z.includes(q)||tr.r.toLowerCase().includes(q.toLowerCase())||tr.v.includes(q))
+    :currentTribes;
+  renderTribes(filtered);
+}
+
+function filterByDialect(dialect){
+  selCounty=null; selTown=null; selTribe=null;
+  renderCounties();
+  currentTribes=TRIBES.filter(t=>t.d===dialect);
+  document.getElementById('tribe-search').value='';
+  document.getElementById('step2').classList.add('hidden');
+  document.getElementById('step3').classList.remove('hidden');
+  renderTribes(currentTribes);
+  hideResult();
+  document.getElementById('tribe-hint').textContent=`${dialect}：共 ${currentTribes.length} 個部落`;
+  document.getElementById('step3').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function showResult(tr){
+  const dk=dKey(tr.d);
+  document.getElementById('r-tribe').textContent=tr.z;
+  document.getElementById('r-roman').textContent=tr.r;
+  document.getElementById('r-dialect-badge').textContent=tr.d;
+  document.getElementById('r-county').textContent=tr.c;
+  document.getElementById('r-town').textContent=tr.t;
+  document.getElementById('r-village').textContent=tr.v;
+  document.getElementById('result-card').className=`result-card bg-${dk}`;
+  const area=document.getElementById('result-area');
+  area.classList.add('show');
+  setTimeout(()=>area.scrollIntoView({behavior:'smooth',block:'nearest'}),100);
+}
+
+function hideResult(){ document.getElementById('result-area').classList.remove('show'); }
+
+function reset(){
+  selCounty=null; selTown=null; selTribe=null;
+  renderCounties();
+  document.getElementById('step2').classList.add('hidden');
+  document.getElementById('step3').classList.add('hidden');
+  hideResult();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+renderCounties();
+</script>
+</body>
+</html>
