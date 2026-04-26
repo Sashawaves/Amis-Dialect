@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>O Pinokayan A Lalan│回家之路  方言別查詢工具</title>
+<title>O Pinokayan A Lalan│回家之路  語別查詢工具</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -150,8 +150,8 @@
     cursor: pointer; transition: all 0.15s; text-align: left;
   }
   .tribe-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.09); }
-  .tribe-card .tribe-name { font-size: 15px; font-weight: 700; line-height: 1.3; margin-bottom: 2px; }
-  .tribe-card .tribe-roman { font-size: 11px; color: #999; margin-bottom: 6px; font-style: italic; }
+  .tribe-card .tribe-name { font-size: 11px; color: #999; margin-bottom: 6px; font-weight: 400; }
+  .tribe-card .tribe-roman { font-size: 14px; font-weight: 700; line-height: 1.3; margin-bottom: 2px; font-style: normal; color: var(--ink); }
   .tribe-card .tribe-village { font-size: 11px; color: #bbb; }
   .tribe-card .dialect-dot {
     width: 8px; height: 8px; border-radius: 50%;
@@ -197,7 +197,7 @@
     font-size: clamp(26px, 6vw, 42px);
     font-weight: 900; line-height: 1.2;
   }
-  .r-roman { font-size: 15px; opacity: 0.65; margin-top: 3px; font-style: italic; }
+  .r-roman { font-size: 16px; opacity: 0.8; margin-top: 3px; font-style: normal; }
   .r-dialect {
     display: inline-block; margin-top: 14px;
     padding: 5px 16px; border-radius: 999px;
@@ -303,8 +303,8 @@
 
 <header>
   <div class="sub">O Pinokayan A Lalan│回家之路</div>
-  <h1>方言別查詢工具</h1>
-  <p>選擇您的縣市 → 鄉鎮 → 部落，立即顯示方言別</p>
+  <h1>語別查詢工具</h1>
+  <p>選擇您的縣市 → 鄉鎮 → 部落，立即顯示語別</p>
 </header>
 
 <div class="legend-bar">
@@ -346,9 +346,9 @@
   <div id="result-area">
     <div class="div-line"></div>
     <div style="margin-top:28px">
-      <div class="step-label"><span class="num">✓</span> 您的方言別</div>
+      <div class="step-label"><span class="num">✓</span> 您的語別</div>
       <div class="result-card" id="result-card">
-        <div class="r-eyebrow">部落 · Tribe</div>
+        <div class="r-eyebrow">Niyaro’ · 部落</div>
         <div class="r-tribe" id="r-tribe"></div>
         <div class="r-roman" id="r-roman"></div>
         <div class="r-dialect" id="r-dialect-badge"></div>
@@ -390,7 +390,7 @@ const TRIBES = [
   {d:'南勢阿美語',c:'花蓮縣',t:'新城鄉',v:'大漢村',z:'北星部落',r:'Pabuisan'},
   {d:'南勢阿美語',c:'花蓮縣',t:'新城鄉',v:'北埔村',z:'復興部落',r:'Palinkaan'},
   {d:'南勢阿美語',c:'花蓮縣',t:'花蓮市',v:'主農里',z:'主農部落',r:'Cibarbaran'},
-  {d:'南勢阿美語',c:'花蓮縣',t:'花蓮市',v:'主農里',z:'德安部落',r:'Cipawkan'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'花蓮市',v:'主權里',z:'德安部落',r:'Cipawkan'},
   {d:'南勢阿美語',c:'花蓮縣',t:'花蓮市',v:'民享里',z:'幾可普部落',r:'Cikep'},
   {d:'南勢阿美語',c:'花蓮縣',t:'花蓮市',v:'民孝里',z:'華東部落',r:'Tuwapun'},
   {d:'南勢阿美語',c:'花蓮縣',t:'花蓮市',v:'國強里',z:'新夏部落',r:'Singsiya'},
@@ -405,7 +405,7 @@ const TRIBES = [
   {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'南華村',z:'南華部落',r:'Mabuwakay'},
   {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'太昌村',z:'七腳川部落',r:'Cikasuwan'},
   {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'仁和村',z:'仁和部落',r:'Isaetipan pahikukian'},
-  {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'仁安村',z:'巴沙哇力岸部落',r:'Pasawalian'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'仁安村',z:'仁安部落',r:'Isawalian pahikukian'},
   {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'東昌村',z:'達拉贊部落',r:'Taracan'},
   {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'永興村',z:'小台東部落',r:'Citekudan'},
   {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'永興村',z:'歌柳灣部落',r:'Cikeliwan'},
@@ -420,7 +420,7 @@ const TRIBES = [
   {d:'南勢阿美語',c:'花蓮縣',t:'吉安鄉',v:'吉安村',z:'吉野汎扎萊部落',r:'Ciyibangcalay'},
   {d:'南勢阿美語',c:'花蓮縣',t:'壽豐鄉',v:'壽豐村',z:'壽豐部落',r:'Ciamengan'},
   {d:'南勢阿美語',c:'花蓮縣',t:'壽豐鄉',v:'溪口村',z:'溪口部落',r:'Kiku'},
-  {d:'南勢阿美語',c:'花蓮縣',t:'壽豐鄉',v:'池南村',z:'池南部落',r:'Fanaw'},
+  {d:'南勢阿美語',c:'花蓮縣',t:'壽豐鄉',v:'池南村',z:'池南部落',r:'Banaw'},
   {d:'南勢阿美語',c:'花蓮縣',t:'壽豐鄉',v:'光榮村',z:'光榮部落',r:'Rinahem'},
   {d:'南勢阿美語',c:'花蓮縣',t:'壽豐鄉',v:'水璉村',z:'水璉部落',r:'Ciwidiyan'},
   {d:'南勢阿美語',c:'花蓮縣',t:'壽豐鄉',v:'豐坪村',z:'豐坪部落',r:"Telu'"},
@@ -506,7 +506,7 @@ const TRIBES = [
   {d:'海岸阿美語',c:'花蓮縣',t:'豐濱鄉',v:'豐濱村',z:'八里灣部落',r:'Haciliwan'},
   {d:'海岸阿美語',c:'花蓮縣',t:'豐濱鄉',v:'豐濱村',z:'豐富部落',r:'Tingalaw'},
   {d:'海岸阿美語',c:'花蓮縣',t:'豐濱鄉',v:'靜浦村',z:'靜安部落',r:'Tisilan'},
-  {d:'海岸阿美語',c:'花蓮縣',t:'豐濱鄉',v:'靜浦村',z:'三富橋部落',r:'Tafugan'},
+  {d:'海岸阿美語',c:'花蓮縣',t:'豐濱鄉',v:'靜浦村',z:'三富橋部落',r:'Tafogan'},
   {d:'海岸阿美語',c:'花蓮縣',t:'豐濱鄉',v:'靜浦村',z:'靜浦部落',r:'Cawi'},
   {d:'海岸阿美語',c:'花蓮縣',t:'豐濱鄉',v:'新社村',z:'東興部落',r:'Malaloong'},
   {d:'海岸阿美語',c:'花蓮縣',t:'豐濱鄉',v:'新社村',z:'復興部落',r:'Dipit'},
@@ -564,7 +564,7 @@ const TRIBES = [
   {d:'馬蘭阿美語',c:'臺東縣',t:'臺東市',v:'豐榮里',z:'常德部落',r:'Sihodingan'},
   {d:'馬蘭阿美語',c:'臺東縣',t:'臺東市',v:'富豐里',z:'石山部落',r:'Kakawasan'},
   {d:'馬蘭阿美語',c:'臺東縣',t:'臺東市',v:'建農里',z:'建農部落',r:'Siafulungay'},
-  {d:'馬蘭阿美語',c:'臺東縣',t:'臺東市',v:'新園里',z:'巴古崙岸部落',r:'Pakulungan'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'臺東市',v:'新園里',z:'巴古崙部落',r:'Pakurung'},
   {d:'馬蘭阿美語',c:'臺東縣',t:'卑南鄉',v:'嘉豐村',z:'山里部落',r:"Kalito'od"},
   {d:'馬蘭阿美語',c:'臺東縣',t:'卑南鄉',v:'富山村',z:'莿桐部落',r:'Fudafudak'},
   {d:'馬蘭阿美語',c:'臺東縣',t:'卑南鄉',v:'利吉村',z:'利吉部落',r:'Dikidiki'},
@@ -572,13 +572,13 @@ const TRIBES = [
   {d:'馬蘭阿美語',c:'臺東縣',t:'關山鎮',v:'德高里',z:'德高部落',r:'Takofan'},
   {d:'馬蘭阿美語',c:'臺東縣',t:'關山鎮',v:'電光里',z:'電光部落',r:'Himoti'},
   {d:'馬蘭阿美語',c:'臺東縣',t:'關山鎮',v:'豐泉里',z:'豐泉部落',r:'Ciwcia'},
-  {d:'馬蘭阿美語',c:'臺東縣',t:'關山鎮',v:'月眉里',z:'月眉部落',r:'Cu ki ngo'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'關山鎮',v:'里壠里',z:'月眉部落',r:'Cu ki ngo'},
   {d:'馬蘭阿美語',c:'臺東縣',t:'關山鎮',v:'里壠里',z:'隆興部落',r:'Cipurungan'},
   {d:'馬蘭阿美語',c:'臺東縣',t:'鹿野鄉',v:'鹿野村',z:'和平部落',r:'Parayapay'},
   {d:'馬蘭阿美語',c:'臺東縣',t:'鹿野鄉',v:'永安村',z:'永昌部落',r:'Rekat'},
   {d:'馬蘭阿美語',c:'臺東縣',t:'鹿野鄉',v:'瑞源村',z:'瑞源部落',r:'Efong'},
   {d:'馬蘭阿美語',c:'臺東縣',t:'鹿野鄉',v:'瑞和村',z:'瑞興部落',r:"Pakala'ac"},
-  {d:'馬蘭阿美語',c:'臺東縣',t:'鹿野鄉',v:'瑞和村',z:'巴伊拉善部落',r:'Pailasan'},
+  {d:'馬蘭阿美語',c:'臺東縣',t:'鹿野鄉',v:'瑞和村',z:'八伊拉善部落',r:'Pailasan'},
   {d:'馬蘭阿美語',c:'臺東縣',t:'鹿野鄉',v:'永安村',z:'山領榴部落',r:'Salinliw'},
   {d:'馬蘭阿美語',c:'臺東縣',t:'鹿野鄉',v:'瑞隆村',z:'卡拿吾部部落',r:"Kanao'pu"},
   {d:'馬蘭阿美語',c:'臺東縣',t:'池上鄉',v:'大埔村',z:'大埔部落',r:'Kalokapuk'},
@@ -589,7 +589,7 @@ const TRIBES = [
   {d:'馬蘭阿美語',c:'臺東縣',t:'池上鄉',v:'慶豐村',z:'慶豐部落',r:'Cipuwa'},
   {d:'馬蘭阿美語',c:'臺東縣',t:'池上鄉',v:'新興村',z:'新興部落',r:'Fangafangasan'},
   {d:'馬蘭阿美語',c:'臺東縣',t:'池上鄉',v:'大坡村',z:'大坡部落',r:'Kawaliwali'},
-  {d:'馬蘭阿美語',c:'臺東縣',t:'池上鄉',v:'福文村',z:'福文部落',r:"Cicala'ay"},
+  {d:'恆春阿美語',c:'臺東縣',t:'池上鄉',v:'福文村',z:'福文部落',r:"Cicala'ay"},
 
   // ══ 恆春阿美語 ══
   {d:'恆春阿美語',c:'屏東縣',t:'牡丹鄉',v:'旭海村',z:'旭海（馬查蘭）部落',r:'Macaran'},
@@ -657,8 +657,8 @@ function renderTribes(list){
     const card=document.createElement('button');
     card.className='tribe-card'+(isActive?` active active-${dk}`:'');
     card.innerHTML=`
-      <div class="tribe-name"><span class="dialect-dot dot-${dk}"></span>${tr.z}</div>
-      <div class="tribe-roman">${tr.r}</div>
+      <div class="tribe-roman"><span class="dialect-dot dot-${dk}"></span>${tr.r}</div>
+      <div class="tribe-name">${tr.z}</div>
       <div class="tribe-village">${tr.v}</div>
     `;
     card.onclick=()=>{ selTribe=tr; renderTribes(list); showResult(tr); };
@@ -691,8 +691,8 @@ function filterByDialect(dialect){
 
 function showResult(tr){
   const dk=dKey(tr.d);
-  document.getElementById('r-tribe').textContent=tr.z;
-  document.getElementById('r-roman').textContent=tr.r;
+  document.getElementById('r-tribe').textContent=tr.r;
+  document.getElementById('r-roman').textContent=tr.z;
   document.getElementById('r-dialect-badge').textContent=tr.d;
   document.getElementById('r-county').textContent=tr.c;
   document.getElementById('r-town').textContent=tr.t;
